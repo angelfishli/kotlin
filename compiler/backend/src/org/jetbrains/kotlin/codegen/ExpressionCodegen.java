@@ -3439,30 +3439,7 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
 
     @Override
     public StackValue visitDestructuringDeclaration(@NotNull KtDestructuringDeclaration multiDeclaration, StackValue receiver) {
-        KtExpression initializer = multiDeclaration.getInitializer();
-        if (initializer == null) return StackValue.none();
-
-        KotlinType initializerType = bindingContext.getType(initializer);
-        assert initializerType != null;
-
-        Type initializerAsmType = asmType(initializerType);
-
-        TransientReceiver initializerAsReceiver = new TransientReceiver(initializerType);
-
-        int tempVarIndex = myFrameMap.enterTemp(initializerAsmType);
-
-        gen(initializer, initializerAsmType);
-        v.store(tempVarIndex, initializerAsmType);
-        StackValue.Local local = StackValue.local(tempVarIndex, initializerAsmType);
-
-        initializeDestructuringDeclarationVariables(multiDeclaration, initializerAsReceiver, local);
-
-        if (initializerAsmType.getSort() == Type.OBJECT || initializerAsmType.getSort() == Type.ARRAY) {
-            v.aconst(null);
-            v.store(tempVarIndex, initializerAsmType);
-        }
-        myFrameMap.leaveTemp(initializerAsmType);
-
+        DestructuringDeclarationCodegen.INSTANCE.genDestructuringDeclaration(this, multiDeclaration, false);
         return StackValue.none();
     }
 
@@ -3501,7 +3478,7 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
         return delegatedVariableValue(varValue, metadataValue, variableDescriptor, typeMapper);
     }
 
-    private void initializeLocalVariable(
+    public void initializeLocalVariable(
             @NotNull KtVariableDeclaration variableDeclaration,
             @NotNull StackValue initializer
     ) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2016 JetBrains s.r.o.
+ * Copyright 2010-2017 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -366,7 +366,8 @@ fun initializeVariablesForDestructuredLambdaParameters(codegen: ExpressionCodege
                 (DescriptorToSourceUtils.descriptorToDeclaration(parameterDescriptor) as? KtParameter)?.destructuringDeclaration
                 ?: error("Destructuring declaration for descriptor $parameterDescriptor not found")
 
-        codegen.initializeDestructuringDeclarationVariables(
+        DestructuringDeclarationCodegen.initializeDestructuringDeclarationVariables(
+                codegen,
                 destructuringDeclaration,
                 TransientReceiver(parameterDescriptor.type),
                 codegen.findLocalOrCapturedValue(parameterDescriptor) ?: error("Local var not found for parameter $parameterDescriptor")

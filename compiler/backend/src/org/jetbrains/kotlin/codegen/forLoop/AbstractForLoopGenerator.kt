@@ -16,6 +16,7 @@
 
 package org.jetbrains.kotlin.codegen.forLoop
 
+import org.jetbrains.kotlin.codegen.DestructuringDeclarationCodegen
 import org.jetbrains.kotlin.codegen.ExpressionCodegen
 import org.jetbrains.kotlin.codegen.StackValue
 import org.jetbrains.kotlin.codegen.filterOutDescriptorsWithSpecialNames
@@ -108,10 +109,12 @@ abstract class AbstractForLoopGenerator(
 
         v.visitLabel(destructuringStartLabel)
 
-        codegen.initializeDestructuringDeclarationVariables(
+        DestructuringDeclarationCodegen.initializeDestructuringDeclarationVariables(
+                codegen,
                 destructuringDeclaration,
                 TransientReceiver(elementType),
-                StackValue.local(loopParameterVar, asmElementType))
+                StackValue.local(loopParameterVar, asmElementType)
+        )
     }
 
     protected abstract fun assignToLoopParameter()
